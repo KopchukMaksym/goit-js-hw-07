@@ -1,9 +1,11 @@
 import { galleryItems } from "./gallery-items.js";
-// Change code below this line
+
 const blockGallery = document.querySelector(".gallery");
 
+let instance;
+
 const addedImg = () => {
-    const images = galleryItems
+    return galleryItems
         .map(({ preview, original, description }) => {
             return `
 <div class="gallery__item">
@@ -18,8 +20,29 @@ const addedImg = () => {
 </div>`;
         })
         .join("");
-    return images;
 };
-console.log(addedImg());
+
 const imagesBlock = addedImg();
-blockGallery.insertAdjacentHTML("beforebegin", imagesBlock);
+blockGallery.insertAdjacentHTML("afterbegin", imagesBlock);
+
+const addEventListener = (event) => {
+    event.preventDefault();
+
+    if (event.target.nodeName !== "IMG") {
+        return;
+    }
+    instance = basicLightbox.create(`
+        <img src=${event.target.dataset.source}>
+    `);
+
+    instance.show();
+};
+
+const closeWithEsc = ({ code }) => {
+    if (code === "Escape") {
+        instance.close();
+    }
+};
+
+blockGallery.addEventListener("click", addEventListener);
+document.addEventListener("keydown", closeWithEsc);
